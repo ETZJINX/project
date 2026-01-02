@@ -19,56 +19,49 @@ void rotate(float rotatespeed){
 }
 void player(void){
     Vector2 newposition = playerposition;
+    Vector2 move = {0};
+    Vector2 right = { playerdirection.y, -playerdirection.x };
+    float dt = GetFrameTime();
+
     
 
     if (IsKeyDown(KEY_W))
     {
-        newposition.y -= speed * GetFrameTime();
-        int i = newposition.x / 30;
-        int j = newposition.y / 30;
-        if (world_map[i][j] == 1)
-        {
-            playerposition.x = newposition.x;
-            newposition.y = playerposition.y;
-        }
-        else playerposition = newposition;
+        move = Vector2Add(move,playerdirection);
     }
     if (IsKeyDown(KEY_S))
     {
-        newposition.y += speed * GetFrameTime();
-        int i = newposition.x / 30;
-        int j = newposition.y / 30;
-        if (world_map[i][j] == 1)
-        {
-            playerposition.x = newposition.x;
-            newposition.y = playerposition.y;
-        }
-        else playerposition = newposition;
+        move = Vector2Subtract(move,playerdirection);
     }
     if (IsKeyDown(KEY_A))
     {
-        newposition.x -= speed * GetFrameTime();
-        int i = newposition.x / 30;
-        int j = newposition.y / 30;
-        if (world_map[i][j] == 1)
-        {
-            playerposition.y = newposition.y;
-            newposition.x = playerposition.x;
-        }
-        else playerposition = newposition;
+        move = Vector2Add(move,right);
     }
     if (IsKeyDown(KEY_D))
     {        
-        newposition.x += speed * GetFrameTime();
-        int i = newposition.x / 30;
-        int j = newposition.y / 30;
-        if (world_map[i][j] == 1)
-        {
-            playerposition.y = newposition.y;
-            newposition.x = playerposition.x;
-        }
-        else playerposition = newposition;
+        move = Vector2Subtract(move,right);
     }
+    if (Vector2Length(move) > 0)
+{
+    move = Vector2Normalize(move);
+    // playerposition = Vector2Add(playerposition, Vector2Scale(move, speed * GetFrameTime()));
+}
+
+    Vector2 newpositionX = { playerposition.x + move.x * speed * dt, playerposition.y };
+        int i = newpositionX.x / 30;
+        int j = playerposition.y / 30;
+        if (world_map[i][j] == 0)
+        {
+            playerposition.x = newpositionX.x;
+        }
+        else playerposition.x = playerposition.x;
+        Vector2 newpositionY = { playerposition.x, playerposition.y + move.y * speed * dt };
+        i = playerposition.x / 30;
+        j = newpositionY.y / 30;
+        if (world_map[i][j] == 0)
+        playerposition.y = newpositionY.y;
+        else playerposition.y = playerposition.y;
+
     if (IsKeyDown(KEY_RIGHT))
     {
         rotate(rotatSpeed);
@@ -77,6 +70,7 @@ void player(void){
     {
         rotate(-rotatSpeed);
     }
+    playerdirection = Vector2Normalize(playerdirection);
     
 }
 
